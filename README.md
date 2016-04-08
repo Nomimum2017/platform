@@ -15,3 +15,11 @@ tree locations, and fires off the build.
 OpenWRT README file can be found in openwrt/README.
 
 
+Commits:
+There should be no changes made and committed in the openwrt subdir heirarchy.
+All needed changes should be achieved via adding Packages, Patches and Config scripts
+in the runeio  generic and platform directories.
+
+This means, while committing,  only the specific  files, subdirectories in platform
+directory and runeio subdirectory should be added. 'git add foo'.  While carefully
+ignoring / excluding transient/side-effect changes under openwrt directory.
