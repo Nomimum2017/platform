@@ -49,6 +49,8 @@ set_ow_build_timestamps () {
 }
 
 build_openwrt () {
+	echo "Starting build job in openwrt with -j6 threads at `date`"
+	echo "You may check the build progress in file ../build_log.txt"
 	time make V=s -j6 &>> ../build_log.txt
 	retval=$?
 	echo "OpenWRT build exit code ${retval}"
@@ -57,7 +59,8 @@ build_openwrt () {
 
 build_all () {
 	set_ow_build_timestamps
-	ret=build_openwrt
+	build_openwrt
+	ret=$?
 	echo "$0: finished at `date`"
 	exit ${ret}
 }
