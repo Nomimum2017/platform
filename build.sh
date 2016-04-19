@@ -1,9 +1,13 @@
 #!/usr/bin/sh
 
 
-check_expand_packages () {
+check_expand_tarball_packages () {
 	if [ -e ${1} ]; then
-		echo "Expanding package ${1}"
+		if [[ $file != *.tgz ]]; then
+			echo "Skipping ${1} in tarball dir"
+			return 0
+		fi
+		echo "Expanding tarball package ${1}"
 		tar xfz ${1}
 		if [ $? != 0 ]; then
 			echo "**: FAILED: to untar tarball: ${1}"
@@ -12,6 +16,12 @@ check_expand_packages () {
 		return 0
 	fi
 	return 1
+}
+
+check_place_directory () {
+        if [ -d ${1} ]; then
+                cp -rf ${1}/* ${2}/
+        fi
 }
 
 check_patch_file () {
@@ -65,6 +75,8 @@ build_all () {
 	exit ${ret}
 }
 
+############################### START ##########################
+
 set -x
 
 echo "$0 Starting at `date`"
@@ -90,15 +102,19 @@ if [ "check_expand_packages ../dl_packages.tgz" ]; then
 	fi
 fi
 
-# Add platform packages
-for i in `ls ../runeio/gl-ar150/Packages/* 2> /dev/null`; do
-	check_expand_packages ${i}
+# Add platform tarball packages
+for i in `ls ../runeio/gl-ar150/Packages-Tarball/* 2> /dev/null`; do
+	check_expand_tarball_packages ${i}
 done
 
 # Add runeio generic packages
-for i in `ls ../runeio/generic/Packages/* 2> /dev/null`; do
-	check_expand_packages ${i}
+for i in `ls ../runeio/generic/Packages-Tarball/* 2> /dev/null`; do
+	check_expand_tarball_packages ${i}
 done
+
+# Add select directory packages
+check_place_directory ../runeio/generic/Packages-Dir/package-lib-rune package
+check_place_directory ../runeio/generic/Packages-Dir/package-etc-rune package
 
 # Patch platform patches
 for i in `ls ../runeio/gl-ar150/Patches/* 2> /dev/null`; do

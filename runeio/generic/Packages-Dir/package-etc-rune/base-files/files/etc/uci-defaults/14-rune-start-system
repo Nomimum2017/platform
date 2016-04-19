@@ -1,0 +1,12 @@
+#!/bin/sh
+
+runelibpath="/lib/rune"
+
+if [ -f /tmp/firstbootrun ]; then
+	echo "Rune Device System Start for First Boot"
+	${runelibpath}/firstboot.sh &>/tmp/firstboot.sh.log   &
+else
+	echo "Rune Device System Start"
+	${runelibpath}/otherboot.sh &>/tmp/otherboot.sh.log &
+fi
+exit 1

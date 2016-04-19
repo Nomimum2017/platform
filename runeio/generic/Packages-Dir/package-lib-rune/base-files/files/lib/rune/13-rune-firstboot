@@ -1,0 +1,5 @@
+#!/bin/sh
+
+echo "Rune Device First Boot at `date`"
+touch /tmp/firstbootrun
+exit 0
