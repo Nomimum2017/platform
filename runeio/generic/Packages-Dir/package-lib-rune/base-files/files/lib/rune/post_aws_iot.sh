@@ -29,15 +29,13 @@ if [ ! -f /tmp/wget.s3.posturl ]; then
 	exit 4;
 fi
 
-if [ ! -f /usr/certs/AWS_CONFIG_FILE ]; then
-        echo "Credentials file  AWS_CONFIG_FILE in /usr/certs is Missing"
-        exit 5;
-fi
+fileurl=`cat /tmp/wget.s3.posturl`
 
-./publish_aws_iot_S3_posted_fileurl.sh
+./publish_aws_iot_fileurl.sh "${fileurl}
 rc=$?
+
 if [ ${rc} -ne 0 ]; then
         echo "Failed to AWS-IOT publish of S3 URL. Ret-code: ${rc}"
-        exit 6;
+        exit 5;
 fi
 exit 0
