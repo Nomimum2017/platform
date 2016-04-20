@@ -29,8 +29,12 @@ if [ $? -ne 0 ]; then
 	exit 3
 fi
 filename=/tmp/desired_state.$(($(date +%s%N)/1000000)) 
+linkfile=/tmp/desired_state.curr
+
+rm -f ${linkfile}
 rm -f ${filename}.prev
 mv -f ${filename} ${filename}.prev
 mv -f ${tmpfilename} ${filename}
-echo "Desired state document is in ${filename}"
+ln -sf ${filename} ${linkfile}
+echo "Desired state document is in ${linkfile} -- ${filename}"
 exit 0
