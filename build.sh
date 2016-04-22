@@ -3,7 +3,7 @@
 
 check_expand_tarball_packages () {
 	if [ -e ${1} ]; then
-		if [[ $file != *.tgz ]]; then
+		if [[ ${1} != *.tgz ]]; then
 			echo "Skipping ${1} in tarball dir"
 			return 0
 		fi
@@ -91,12 +91,15 @@ touch .config.old
 cp ../runeio/gl-ar150/CONFIG_PLATFORM_gl-ar150 .config
 
 # Skip the normal OpenWRT feeds scripts, by force copying/untarring here
-check_expand_packages ../runeio/misc/feeds-misc.tgz
+check_expand_tarball_packages ../runeio/misc/feeds-misc.tgz
 
 # See if we have cached dl/ directory in tarball. Saves quite a bit of downloads during build
-if [ "check_expand_packages ../dl_packages.tgz" ]; then
-	if [ "check_expand_packages ../../dl_packages.tgz" ]; then
-		if [ "check_expand_packages ../../../dl_packages.tgz" ]; then
+check_expand_tarball_packages ../dl_packages.tgz
+if [ $? -ne 0 ]; then
+	check_expand_tarball_packages ../../dl_packages.tgz
+	if [ $? -ne 0 ]; then
+		check_expand_tarball_packages ../../../dl_packages.tgz
+		if [ $? -ne 0 ]; then
 			echo "cached dl_packages.tgz could not be located"
 		fi
 	fi

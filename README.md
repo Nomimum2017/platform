@@ -17,9 +17,27 @@ OpenWRT README file can be found in openwrt/README.
 
 Commits:
 There should be no changes made and committed in the openwrt subdir heirarchy.
-All needed changes should be achieved via adding Packages, Patches and Config scripts
-in the runeio  generic and platform directories.
+All needed changes should be achieved via adding Packages, Patches
+and Config scripts in the runeio  generic and platform directories.
 
-This means, while committing,  only the specific  files, subdirectories in platform
-directory and runeio subdirectory should be added. 'git add foo'.  While carefully
-ignoring / excluding transient/side-effect changes under openwrt directory.
+This means, while committing,  only the specific  files, subdirectories
+in platform directory and runeio subdirectory should be added.
+'git add foo'
+
+While carefully ignoring / excluding transient/side-effect changes
+under openwrt directory.
+
+Build:
+
+   Build pre-requisites:
+
+   Build script
+
+   Inovke via  ./build.sh
+
+	The script will end up starting a 'make' job inside openwrt directory with -j6.
+
+	The resulting binaries should be found under openwrt/bin/... path
+
+	A build log is captured and saved in build_log.txt
+
