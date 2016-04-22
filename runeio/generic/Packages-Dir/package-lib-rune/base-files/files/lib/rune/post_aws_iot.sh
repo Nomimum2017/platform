@@ -31,7 +31,7 @@ fi
 
 fileurl=`cat /tmp/wget.s3.posturl`
 
-./publish_aws_iot_fileurl.sh "${fileurl}
+./publish_aws_iot_fileurl.sh "${fileurl}"
 rc=$?
 
 if [ ${rc} -ne 0 ]; then

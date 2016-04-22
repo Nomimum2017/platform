@@ -38,6 +38,7 @@ Build:
 	The script will end up starting a 'make' job inside openwrt directory with -j6.
 
 	The resulting binaries should be found under openwrt/bin/... path
+	e.g. For gl-ar150:  openwrt/bin/ar71xx/openwrt-ar71xx-generic-gl_ar150-squashfs-sysupgrade.bin
 
 	A build log is captured and saved in build_log.txt
 
