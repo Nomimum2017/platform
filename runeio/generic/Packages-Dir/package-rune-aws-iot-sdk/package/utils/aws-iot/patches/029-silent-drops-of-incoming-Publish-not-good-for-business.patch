@@ -1,0 +1,11 @@
+--- a/aws_mqtt_embedded_client_lib/MQTTClient-C/src/MQTTClient.c	2016-04-24 19:07:35.552642678 -0700
++++ b/aws_mqtt_embedded_client_lib/MQTTClient-C/src/MQTTClient.c	2016-04-24 19:10:54.531992537 -0700
+@@ -189,6 +189,8 @@
+ 
+     /* if the buffer is too short then the message will be dropped silently */
+ 	if (rem_len >= c->readBufSize) {
++		printf("%s: ***** rem_len %u  is greater than bufsize: %u Drop incoming pkt type: %X",
++		       __FUNCTION__, rem_len, c->readBufSize, c->readbuf[0]);
+ 		bytes_to_be_read = c->readBufSize;
+ 		do {
+ 			ret_val = c->networkStack.mqttread(&(c->networkStack), c->readbuf, bytes_to_be_read, left_ms(timer));

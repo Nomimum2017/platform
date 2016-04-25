@@ -1,0 +1,126 @@
+--- a/sample_apps/subscribe_publish_sample/subscribe_publish_sample.c	2016-04-24 19:16:55.205001466 -0700
++++ b/sample_apps/subscribe_publish_sample/subscribe_publish_sample.c	2016-04-24 21:16:17.593560841 -0700
+@@ -34,12 +34,15 @@
+ #include <memory.h>
+ #include <sys/time.h>
+ #include <limits.h>
++#include <errno.h>
+ 
+ #include "aws_iot_log.h"
+ #include "aws_iot_version.h"
+ #include "aws_iot_mqtt_interface.h"
+ #include "aws_iot_config.h"
+ 
++FILE *messageFile = NULL;
++
+ int MQTTcallbackHandler(MQTTCallbackParams params) {
+ 
+ 	INFO("Subscribe callback");
+@@ -47,6 +50,12 @@
+ 			(int)params.TopicNameLen, params.pTopicName,
+ 			(int)params.MessageParams.PayloadLen, (char*)params.MessageParams.pPayload);
+ 
++	if (messageFile != NULL) {
++		fprintf(messageFile, "%.*s\n",
++			(int)params.MessageParams.PayloadLen, (char*)params.MessageParams.pPayload);
++		fflush(messageFile);
++	}
++
+ 	return 0;
+ }
+ 
+@@ -89,6 +98,7 @@
+ static char STopic[PATH_MAX + 1] = "sdkTest/sub";
+ static char PTopic[PATH_MAX + 1] = "sdkTest/sub";
+ static char ClientID[PATH_MAX + 1] = "CSDK-test-device";
++static char messageFilename[PATH_MAX + 1] = "";
+ static char payloadMsg[400] = "hello from SDK";
+ static int sub_mode = 0; // 0 = DISABLED, 1 = Subscribe
+ static int pub_mode = 0; // 0 = DISABLED, 1 = Publish
+@@ -96,7 +106,7 @@
+ void parseInputArgsForConnectParams(int argc, char** argv) {
+ 	int opt;
+ 
+-	while (-1 != (opt = getopt(argc, argv, "h:p:c:x:S:P:I:m:"))) {
++	while (-1 != (opt = getopt(argc, argv, "h:p:c:x:S:P:I:m:o:"))) {
+ 		switch (opt) {
+ 		case 'h':
+ 			strcpy(HostAddress, optarg);
+@@ -138,6 +148,10 @@
+ 			strcpy(payloadMsg, optarg);
+ 			DEBUG("Payload Message %s", payloadMsg);
+ 			break;
++		case 'o':
++			strcpy(messageFilename, optarg);
++			DEBUG("Filename for subscription delivered messages %s", messageFilename);
++			break;
+ 		case '?':
+ 			if (optopt == 'c') {
+ 				ERROR("Option -%c requires an argument.", optopt);
+@@ -187,6 +201,17 @@
+ 	DEBUG("Client-ID %s", ClientID);
+ 	DEBUG("Subscribe %s", (sub_mode)?"ON":"No");
+ 	DEBUG("Publish %s", (pub_mode)?"ON":"No");
++	if (sub_mode) DEBUG("Subscription Messages File: %s", messageFilename);
++
++	if (messageFilename[0] != '\0') {
++		messageFile = fopen(messageFilename, "a");
++		if (messageFile != NULL) {
++			INFO("Opened subscription output file: %s", messageFilename);
++		} else {
++			ERROR("Unable to open subscription output file: %s, Error: %d",
++			      messageFilename, errno);
++		}
++	}
+ 
+ 	MQTTConnectParams connectParams = MQTTConnectParamsDefault;
+ 
+@@ -211,6 +236,7 @@
+ 	if (NONE_ERROR != rc) {
+ 		ERROR("Error(%d) connecting to %s:%d", rc, connectParams.pHostURL, connectParams.port);
+ 	}
++	INFO("Connected");
+ 	/*
+ 	 * Enable Auto Reconnect functionality. Minimum and Maximum time of Exponential backoff are set in aws_iot_config.h
+ 	 *  #AWS_IOT_MQTT_MIN_RECONNECT_WAIT_INTERVAL
+@@ -234,7 +260,7 @@
+ 			if (NONE_ERROR != rc) {
+ 				ERROR("Error subscribing: rc %d", rc);
+ 			} else {
+-				ERROR("Subscribed\n");
++				INFO("Subscribed\n");
+ 			}
+ 		}
+ 		sleep(1);
+@@ -271,25 +297,25 @@
+ 				// If the client is attempting to reconnect we will skip the rest of the loop.
+ 				continue;
+ 			}
+-			INFO("-->sleep");
+-			sleep(1);
+ 			Params.MessageParams = Msg;
+ 			rc = aws_iot_mqtt_publish(&Params);
++			INFO("Publish attempted. rc: %d", rc);
++			aws_iot_mqtt_yield(50);
++			sleep(2);
++			aws_iot_mqtt_yield(50);
+ 			if (publishCount > 0) {
+ 				publishCount--;
+ 			}
+-			if (sub_mode) {
+-				sleep(2);
+-			}
+ 		}
+ 
+ 		if (NONE_ERROR != rc) {
+ 			ERROR("An error occurred in the loop.\n");
+ 		} else {
+-			INFO("Publish done\n");
++			INFO("All Publish done\n");
+ 		}
+ 	}
+ 
++	if (messageFile != NULL) fclose(messageFile);
+ 	return rc;
+ }
+ 

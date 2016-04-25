@@ -1,0 +1,35 @@
+--- a/sample_apps/subscribe_publish_sample/subscribe_publish_sample.c	2016-04-24 19:00:26.864175717 -0700
++++ b/sample_apps/subscribe_publish_sample/subscribe_publish_sample.c	2016-04-24 19:04:54.263973885 -0700
+@@ -232,12 +232,21 @@
+ 			INFO("Subscribing...");
+ 			rc = aws_iot_mqtt_subscribe(&subParams);
+ 			if (NONE_ERROR != rc) {
+-				ERROR("Error subscribing");
++				ERROR("Error subscribing: rc %d", rc);
++			} else {
++				ERROR("Subscribed\n");
+ 			}
+ 		}
+-		sleep((pub_mode)?2:((publishCount?publishCount:1) * 10));
++		sleep(1);
++		if (!pub_mode) {
++			publishCount = publishCount ? publishCount * 20 : 40; 
++			while (publishCount-- > 0) {
++				aws_iot_mqtt_yield(50);
++ 			}
++ 		}
+ 	}
+ 
++	rc = NONE_ERROR;
+ 	if (pub_mode) {
+ 		MQTTMessageParams Msg = MQTTMessageParamsDefault;
+ 		Msg.qos = QOS_0;
+@@ -257,7 +266,7 @@
+ 			//Max time the yield function will wait for read messages
+ 			rc = aws_iot_mqtt_yield(100);
+ 			if(NETWORK_ATTEMPTING_RECONNECT == rc){
+-				INFO("-->sleep");
++				INFO("--->sleep");
+ 				sleep(1);
+ 				// If the client is attempting to reconnect we will skip the rest of the loop.
+ 				continue;

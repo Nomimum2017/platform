@@ -1,0 +1,152 @@
+--- a/sample_apps/subscribe_publish_sample/subscribe_publish_sample.c	2016-04-21 22:50:19.594298593 -0700
++++ b/sample_apps/subscribe_publish_sample/subscribe_publish_sample.c	2016-04-21 23:48:27.076137242 -0700
+@@ -90,6 +90,8 @@
+ static char PTopic[PATH_MAX + 1] = "sdkTest/sub";
+ static char ClientID[PATH_MAX + 1] = "CSDK-test-device";
+ static char payloadMsg[400] = "hello from SDK";
++static int sub_mode = 0; // 0 = DISABLED, 1 = Subscribe
++static int pub_mode = 0; // 0 = DISABLED, 1 = Publish
+ 
+ void parseInputArgsForConnectParams(int argc, char** argv) {
+ 	int opt;
+@@ -115,10 +117,18 @@
+ 		case 'S':
+ 			strcpy(STopic, optarg);
+ 			DEBUG("Subscribe topic %s", STopic);
++			if (sub_mode) {
++				ERROR("Error in -S .. option repeated");
++			}
++			sub_mode = 1;
+ 			break;
+ 		case 'P':
+ 			strcpy(PTopic, optarg);
+ 			DEBUG("Publish topic %s", PTopic);
++			if (pub_mode) {
++				ERROR("Error in -P .. option repeated");
++			}
++			pub_mode = 1;
+ 			break;
+ 		case 'I':
+ 			strcpy(ClientID, optarg);
+@@ -158,6 +168,10 @@
+ 	char clientKeyName[] = AWS_IOT_PRIVATE_KEY_FILENAME;
+ 
+ 	parseInputArgsForConnectParams(argc, argv);
++	if (!sub_mode && !pub_mode) {
++		sub_mode = 1;
++		pub_mode = 1;
++	}
+ 
+ 	INFO("\nAWS IoT SDK Version %d.%d.%d-%s\n", VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, VERSION_TAG);
+ 
+@@ -171,6 +185,8 @@
+ 	DEBUG("Sub-Topic %s", STopic);
+ 	DEBUG("Pub-Topic %s", PTopic);
+ 	DEBUG("Client-ID %s", ClientID);
++	DEBUG("Subscribe %s", (sub_mode)?"ON":"No");
++	DEBUG("Publish %s", (pub_mode)?"ON":"No");
+ 
+ 	MQTTConnectParams connectParams = MQTTConnectParamsDefault;
+ 
+@@ -206,55 +222,63 @@
+ 		return rc;
+ 	}
+ 
+-	MQTTSubscribeParams subParams = MQTTSubscribeParamsDefault;
+-	subParams.mHandler = MQTTcallbackHandler;
+-	subParams.pTopic = STopic;
+-	subParams.qos = QOS_0;
+-
+-	if (NONE_ERROR == rc) {
+-		INFO("Subscribing...");
+-		rc = aws_iot_mqtt_subscribe(&subParams);
+-		if (NONE_ERROR != rc) {
+-			ERROR("Error subscribing");
++	if (sub_mode) {
++		MQTTSubscribeParams subParams = MQTTSubscribeParamsDefault;
++		subParams.mHandler = MQTTcallbackHandler;
++		subParams.pTopic = STopic;
++		subParams.qos = QOS_0;
++
++		if (NONE_ERROR == rc) {
++			INFO("Subscribing...");
++			rc = aws_iot_mqtt_subscribe(&subParams);
++			if (NONE_ERROR != rc) {
++				ERROR("Error subscribing");
++			}
+ 		}
++		sleep((pub_mode)?2:((publishCount?publishCount:1) * 10));
+ 	}
+ 
+-	MQTTMessageParams Msg = MQTTMessageParamsDefault;
+-	Msg.qos = QOS_0;
+-	Msg.pPayload = (void *) payloadMsg;
+-	Msg.PayloadLen = strlen(payloadMsg) + 1;
++	if (pub_mode) {
++		MQTTMessageParams Msg = MQTTMessageParamsDefault;
++		Msg.qos = QOS_0;
++		Msg.pPayload = (void *) payloadMsg;
++		Msg.PayloadLen = strlen(payloadMsg) + 1;
+ 
+-	MQTTPublishParams Params = MQTTPublishParamsDefault;
+-	Params.pTopic = PTopic;
++		MQTTPublishParams Params = MQTTPublishParamsDefault;
++		Params.pTopic = PTopic;
+ 
+-	if (publishCount != 0) {
+-		infinitePublishFlag = false;
+-	}
++		if (publishCount != 0) {
++			infinitePublishFlag = false;
++		}
+ 
+-	while ((NETWORK_ATTEMPTING_RECONNECT == rc || RECONNECT_SUCCESSFUL == rc || NONE_ERROR == rc)
+-			&& (publishCount > 0 || infinitePublishFlag)) {
++		while ((NETWORK_ATTEMPTING_RECONNECT == rc || RECONNECT_SUCCESSFUL == rc || NONE_ERROR == rc)
++		       && (publishCount > 0 || infinitePublishFlag)) {
+ 
+-		//Max time the yield function will wait for read messages
+-		rc = aws_iot_mqtt_yield(100);
+-		if(NETWORK_ATTEMPTING_RECONNECT == rc){
++			//Max time the yield function will wait for read messages
++			rc = aws_iot_mqtt_yield(100);
++			if(NETWORK_ATTEMPTING_RECONNECT == rc){
++				INFO("-->sleep");
++				sleep(1);
++				// If the client is attempting to reconnect we will skip the rest of the loop.
++				continue;
++			}
+ 			INFO("-->sleep");
+ 			sleep(1);
+-			// If the client is attempting to reconnect we will skip the rest of the loop.
+-			continue;
+-		}
+-		INFO("-->sleep");
+-		sleep(1);
+-		Params.MessageParams = Msg;
+-		rc = aws_iot_mqtt_publish(&Params);
+-		if (publishCount > 0) {
+-			publishCount--;
++			Params.MessageParams = Msg;
++			rc = aws_iot_mqtt_publish(&Params);
++			if (publishCount > 0) {
++				publishCount--;
++			}
++			if (sub_mode) {
++				sleep(2);
++			}
+ 		}
+-	}
+ 
+-	if (NONE_ERROR != rc) {
+-		ERROR("An error occurred in the loop.\n");
+-	} else {
+-		INFO("Publish done\n");
++		if (NONE_ERROR != rc) {
++			ERROR("An error occurred in the loop.\n");
++		} else {
++			INFO("Publish done\n");
++		}
+ 	}
+ 
+ 	return rc;
