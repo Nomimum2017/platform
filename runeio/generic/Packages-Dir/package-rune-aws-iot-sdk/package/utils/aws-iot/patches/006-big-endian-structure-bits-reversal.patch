@@ -1,0 +1,33 @@
+--- a/sample_apps/subscribe_publish_sample/Makefile	2016-03-02 18:07:17.461112813 -0800
++++ b/sample_apps/subscribe_publish_sample/Makefile	2016-03-02 18:08:46.904447512 -0800
+@@ -63,7 +63,7 @@
+ COMPILER_FLAGS += -g
+ COMPILER_FLAGS += $(LOG_FLAGS)
+ #If the processor is big endian uncomment the compiler flag
+-#COMPILER_FLAGS += -DREVERSED
++COMPILER_FLAGS += -DREVERSED
+ 
+ MBED_TLS_MAKE_CMD = cd $(MBEDTLS_DIR) && make
+ 
+--- a/sample_apps/shadow_sample/Makefile	2016-03-02 18:10:20.651750196 -0800
++++ b/sample_apps/shadow_sample/Makefile	2016-03-02 18:10:37.463625145 -0800
+@@ -70,7 +70,7 @@
+ COMPILER_FLAGS += -g 
+ COMPILER_FLAGS += $(LOG_FLAGS)
+ #If the processor is big endian uncomment the compiler flag
+-#COMPILER_FLAGS += -DREVERSED
++COMPILER_FLAGS += -DREVERSED
+ 
+ MBED_TLS_MAKE_CMD = cd $(MBEDTLS_DIR) && make
+ 
+--- a/sample_apps/shadow_sample_console_echo/Makefile	2016-03-02 18:11:31.389224034 -0800
++++ b/sample_apps/shadow_sample_console_echo/Makefile	2016-03-02 18:11:44.043129911 -0800
+@@ -71,7 +71,7 @@
+ COMPILER_FLAGS += $(LOG_FLAGS)
+ 
+ #If the processor is big endian uncomment the compiler flag
+-#COMPILER_FLAGS += -DREVERSED
++COMPILER_FLAGS += -DREVERSED
+ 
+ MBED_TLS_MAKE_CMD = cd $(MBEDTLS_DIR) && make
+ 

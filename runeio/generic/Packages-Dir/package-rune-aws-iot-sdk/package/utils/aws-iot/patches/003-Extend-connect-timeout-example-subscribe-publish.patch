@@ -1,0 +1,13 @@
+--- a/sample_apps/subscribe_publish_sample/subscribe_publish_sample.c	2016-03-02 18:47:59.519393985 -0800
++++ b/sample_apps/subscribe_publish_sample/subscribe_publish_sample.c	2016-03-02 18:48:44.733036197 -0800
+@@ -181,8 +181,8 @@
+ 	connectParams.pRootCALocation = rootCA;
+ 	connectParams.pDeviceCertLocation = clientCRT;
+ 	connectParams.pDevicePrivateKeyLocation = clientKey;
+-	connectParams.mqttCommandTimeout_ms = 2000;
+-	connectParams.tlsHandshakeTimeout_ms = 5000;
++	connectParams.mqttCommandTimeout_ms = 10000;
++	connectParams.tlsHandshakeTimeout_ms = 10000;
+ 	connectParams.isSSLHostnameVerify = true; // ensure this is set to true for production
+ 	connectParams.disconnectHandler = disconnectCallbackHandler;
+ 

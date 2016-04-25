@@ -1,0 +1,48 @@
+--- a/sample_apps/subscribe_publish_sample/subscribe_publish_sample.c	2016-03-21 22:47:54.462376196 -0700
++++ b/sample_apps/subscribe_publish_sample/subscribe_publish_sample.c	2016-03-21 23:27:17.425971822 -0700
+@@ -89,11 +89,12 @@
+ static char STopic[PATH_MAX + 1] = "sdkTest/sub";
+ static char PTopic[PATH_MAX + 1] = "sdkTest/sub";
+ static char ClientID[PATH_MAX + 1] = "CSDK-test-device";
++static char payloadMsg[400] = "hello from SDK";
+ 
+ void parseInputArgsForConnectParams(int argc, char** argv) {
+ 	int opt;
+ 
+-	while (-1 != (opt = getopt(argc, argv, "h:p:c:x:S:P:I:"))) {
++	while (-1 != (opt = getopt(argc, argv, "h:p:c:x:S:P:I:m:"))) {
+ 		switch (opt) {
+ 		case 'h':
+ 			strcpy(HostAddress, optarg);
+@@ -123,6 +124,10 @@
+ 			strcpy(ClientID, optarg);
+ 			DEBUG("Client ID %s", ClientID);
+ 			break;
++		case 'm':
++			strcpy(payloadMsg, optarg);
++			DEBUG("Payload Message %s", payloadMsg);
++			break;
+ 		case '?':
+ 			if (optopt == 'c') {
+ 				ERROR("Option -%c requires an argument.", optopt);
+@@ -216,9 +221,8 @@
+ 
+ 	MQTTMessageParams Msg = MQTTMessageParamsDefault;
+ 	Msg.qos = QOS_0;
+-	char cPayload[100];
+-	sprintf(cPayload, "%s : %d ", "hello from SDK", i);
+-	Msg.pPayload = (void *) cPayload;
++	Msg.pPayload = (void *) payloadMsg;
++	Msg.PayloadLen = strlen(payloadMsg) + 1;
+ 
+ 	MQTTPublishParams Params = MQTTPublishParamsDefault;
+ 	Params.pTopic = PTopic;
+@@ -240,8 +244,6 @@
+ 		}
+ 		INFO("-->sleep");
+ 		sleep(1);
+-		sprintf(cPayload, "%s : %d ", "hello from SDK", i++);
+-		Msg.PayloadLen = strlen(cPayload) + 1;
+ 		Params.MessageParams = Msg;
+ 		rc = aws_iot_mqtt_publish(&Params);
+ 		if (publishCount > 0) {

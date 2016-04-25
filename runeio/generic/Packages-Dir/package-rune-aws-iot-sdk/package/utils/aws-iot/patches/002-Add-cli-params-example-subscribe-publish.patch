@@ -1,0 +1,81 @@
+--- a/sample_apps/subscribe_publish_sample/subscribe_publish_sample.c	2016-02-10 14:31:56.000000000 -0800
++++ b/sample_apps/subscribe_publish_sample/subscribe_publish_sample.c	2016-03-02 13:26:50.859168651 -0800
+@@ -86,10 +86,14 @@
+  */
+ uint32_t publishCount = 0;
+ 
++static char STopic[PATH_MAX + 1] = "sdkTest/sub";
++static char PTopic[PATH_MAX + 1] = "sdkTest/sub";
++static char ClientID[PATH_MAX + 1] = "CSDK-test-device";
++
+ void parseInputArgsForConnectParams(int argc, char** argv) {
+ 	int opt;
+ 
+-	while (-1 != (opt = getopt(argc, argv, "h:p:c:x:"))) {
++	while (-1 != (opt = getopt(argc, argv, "h:p:c:x:S:P:I:"))) {
+ 		switch (opt) {
+ 		case 'h':
+ 			strcpy(HostAddress, optarg);
+@@ -107,6 +111,18 @@
+ 			publishCount = atoi(optarg);
+ 			DEBUG("publish %s times\n", optarg);
+ 			break;
++		case 'S':
++			strcpy(STopic, optarg);
++			DEBUG("Subscribe topic %s", STopic);
++			break;
++		case 'P':
++			strcpy(PTopic, optarg);
++			DEBUG("Publish topic %s", PTopic);
++			break;
++		case 'I':
++			strcpy(ClientID, optarg);
++			DEBUG("Client ID %s", ClientID);
++			break;
+ 		case '?':
+ 			if (optopt == 'c') {
+ 				ERROR("Option -%c requires an argument.", optopt);
+@@ -149,13 +165,16 @@
+ 	DEBUG("rootCA %s", rootCA);
+ 	DEBUG("clientCRT %s", clientCRT);
+ 	DEBUG("clientKey %s", clientKey);
++	DEBUG("Sub-Topic %s", STopic);
++	DEBUG("Pub-Topic %s", PTopic);
++	DEBUG("Client-ID %s", ClientID);
+ 
+ 	MQTTConnectParams connectParams = MQTTConnectParamsDefault;
+ 
+ 	connectParams.KeepAliveInterval_sec = 10;
+ 	connectParams.isCleansession = true;
+ 	connectParams.MQTTVersion = MQTT_3_1_1;
+-	connectParams.pClientID = "CSDK-test-device";
++	connectParams.pClientID = ClientID;
+ 	connectParams.pHostURL = HostAddress;
+ 	connectParams.port = port;
+ 	connectParams.isWillMsgPresent = false;
+@@ -169,6 +188,7 @@
+ 
+ 	INFO("Connecting...");
+ 	rc = aws_iot_mqtt_connect(&connectParams);
++	//ERROR("Error (%d) from aws_iot_mqtt_connect()..tls-connect\n", rc);
+ 	if (NONE_ERROR != rc) {
+ 		ERROR("Error(%d) connecting to %s:%d", rc, connectParams.pHostURL, connectParams.port);
+ 	}
+@@ -185,7 +205,7 @@
+ 
+ 	MQTTSubscribeParams subParams = MQTTSubscribeParamsDefault;
+ 	subParams.mHandler = MQTTcallbackHandler;
+-	subParams.pTopic = "sdkTest/sub";
++	subParams.pTopic = STopic;
+ 	subParams.qos = QOS_0;
+ 
+ 	if (NONE_ERROR == rc) {
+@@ -203,7 +223,7 @@
+ 	Msg.pPayload = (void *) cPayload;
+ 
+ 	MQTTPublishParams Params = MQTTPublishParamsDefault;
+-	Params.pTopic = "sdkTest/sub";
++	Params.pTopic = PTopic;
+ 
+ 	if (publishCount != 0) {
+ 		infinitePublishFlag = false;

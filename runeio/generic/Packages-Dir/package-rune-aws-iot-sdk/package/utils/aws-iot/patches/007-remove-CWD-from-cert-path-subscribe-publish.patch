@@ -1,0 +1,33 @@
+--- a/sample_apps/subscribe_publish_sample/subscribe_publish_sample.c	2016-03-03 05:40:27.961433902 -0800
++++ b/sample_apps/subscribe_publish_sample/subscribe_publish_sample.c	2016-03-03 05:41:55.699790062 -0800
+@@ -69,7 +69,7 @@
+ /**
+  * @brief Default cert location
+  */
+-char certDirectory[PATH_MAX + 1] = "../../certs";
++char certDirectory[PATH_MAX + 1] = "/usr/certs";
+ 
+ /**
+  * @brief Default MQTT HOST URL is pulled from the aws_iot_config.h
+@@ -148,7 +148,6 @@
+ 	char rootCA[PATH_MAX + 1];
+ 	char clientCRT[PATH_MAX + 1];
+ 	char clientKey[PATH_MAX + 1];
+-	char CurrentWD[PATH_MAX + 1];
+ 	char cafileName[] = AWS_IOT_ROOT_CA_FILENAME;
+ 	char clientCRTName[] = AWS_IOT_CERTIFICATE_FILENAME;
+ 	char clientKeyName[] = AWS_IOT_PRIVATE_KEY_FILENAME;
+@@ -157,10 +156,9 @@
+ 
+ 	INFO("\nAWS IoT SDK Version %d.%d.%d-%s\n", VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, VERSION_TAG);
+ 
+-	getcwd(CurrentWD, sizeof(CurrentWD));
+-	sprintf(rootCA, "%s/%s/%s", CurrentWD, certDirectory, cafileName);
+-	sprintf(clientCRT, "%s/%s/%s", CurrentWD, certDirectory, clientCRTName);
+-	sprintf(clientKey, "%s/%s/%s", CurrentWD, certDirectory, clientKeyName);
++	sprintf(rootCA, "%s/%s", certDirectory, cafileName);
++	sprintf(clientCRT, "%s/%s", certDirectory, clientCRTName);
++	sprintf(clientKey, "%s/%s", certDirectory, clientKeyName);
+ 
+ 	DEBUG("rootCA %s", rootCA);
+ 	DEBUG("clientCRT %s", clientCRT);

@@ -1,0 +1,32 @@
+--- a/sample_apps/shadow_sample_console_echo/shadow_console_echo.c	2016-03-03 06:50:37.562339560 -0800
++++ b/sample_apps/shadow_sample_console_echo/shadow_console_echo.c	2016-03-03 06:51:47.898744764 -0800
+@@ -53,7 +53,7 @@
+  * @note Ensure the buffer sizes in aws_iot_config.h are big enough to receive the delta message. The delta message will also contain the metadata with the timestamps
+  */
+ 
+-char certDirectory[PATH_MAX + 1] = "../../certs";
++char certDirectory[PATH_MAX + 1] = "/usr/certs";
+ char HostAddress[255] = AWS_IOT_MQTT_HOST;
+ uint32_t port = AWS_IOT_MQTT_PORT;
+ bool messageArrivedOnDelta = false;
+@@ -84,17 +84,15 @@
+ 	char rootCA[PATH_MAX + 1];
+ 	char clientCRT[PATH_MAX + 1];
+ 	char clientKey[PATH_MAX + 1];
+-	char CurrentWD[PATH_MAX + 1];
+ 	char cafileName[] = AWS_IOT_ROOT_CA_FILENAME;
+ 	char clientCRTName[] = AWS_IOT_CERTIFICATE_FILENAME;
+ 	char clientKeyName[] = AWS_IOT_PRIVATE_KEY_FILENAME;
+ 
+ 	INFO("\nAWS IoT SDK Version %d.%d.%d-%s\n", VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, VERSION_TAG);
+ 
+-	getcwd(CurrentWD, sizeof(CurrentWD));
+-	sprintf(rootCA, "%s/%s/%s", CurrentWD, certDirectory, cafileName);
+-	sprintf(clientCRT, "%s/%s/%s", CurrentWD, certDirectory, clientCRTName);
+-	sprintf(clientKey, "%s/%s/%s", CurrentWD, certDirectory, clientKeyName);
++	sprintf(rootCA, "%s/%s", certDirectory, cafileName);
++	sprintf(clientCRT, "%s/%s", certDirectory, clientCRTName);
++	sprintf(clientKey, "%s/%s", certDirectory, clientKeyName);
+ 
+ 	DEBUG("rootCA %s", rootCA);
+ 	DEBUG("clientCRT %s", clientCRT);

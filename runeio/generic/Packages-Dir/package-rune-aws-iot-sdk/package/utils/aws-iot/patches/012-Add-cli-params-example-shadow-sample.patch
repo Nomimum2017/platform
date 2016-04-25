@@ -1,0 +1,47 @@
+--- a/sample_apps/shadow_sample/shadow_sample.c	2016-02-10 14:31:56.000000000 -0800
++++ b/sample_apps/shadow_sample/shadow_sample.c	2016-03-02 19:26:23.906381829 -0800
+@@ -96,10 +96,13 @@
+ uint32_t port = AWS_IOT_MQTT_PORT;
+ uint8_t numPubs = 5;
+ 
++static char ClientID[PATH_MAX + 1] = AWS_IOT_MQTT_CLIENT_ID;
++static char ThingName[PATH_MAX + 1] = AWS_IOT_MY_THING_NAME;
++
+ void parseInputArgsForConnectParams(int argc, char** argv) {
+ 	int opt;
+ 
+-	while (-1 != (opt = getopt(argc, argv, "h:p:c:n:"))) {
++	while (-1 != (opt = getopt(argc, argv, "h:p:c:n:T:I:"))) {
+ 		switch (opt) {
+ 		case 'h':
+ 			strcpy(HostAddress, optarg);
+@@ -117,6 +120,14 @@
+ 			numPubs = atoi(optarg);
+ 			DEBUG("num pubs %s", optarg);
+ 			break;
++		case 'T':
++			strcpy(ThingName, optarg);
++			DEBUG("Thing name %s", ThingName);
++			break;
++		case 'I':
++			strcpy(ClientID, optarg);
++			DEBUG("Client ID %s", ClientID);
++			break;
+ 		case '?':
+ 			if (optopt == 'c') {
+ 				ERROR("Option -%c requires an argument.", optopt);
+@@ -181,10 +192,12 @@
+ 	DEBUG("Using rootCA %s", rootCA);
+ 	DEBUG("Using clientCRT %s", clientCRT);
+ 	DEBUG("Using clientKey %s", clientKey);
++	DEBUG("Thing-Name %s", ThingName);
++	DEBUG("Client-ID %s", ClientID);
+ 
+ 	ShadowParameters_t sp = ShadowParametersDefault;
+-	sp.pMyThingName = AWS_IOT_MY_THING_NAME;
+-	sp.pMqttClientId = AWS_IOT_MQTT_CLIENT_ID;
++	sp.pMyThingName = ThingName;
++	sp.pMqttClientId = ClientID;
+ 	sp.pHost = HostAddress;
+ 	sp.port = port;
+ 	sp.pClientCRT = clientCRT;

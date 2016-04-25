@@ -1,0 +1,57 @@
+--- a/sample_apps/shadow_sample_console_echo/shadow_console_echo.c	2016-02-10 14:31:56.000000000 -0800
++++ b/sample_apps/shadow_sample_console_echo/shadow_console_echo.c	2016-03-02 19:32:07.579732796 -0800
+@@ -58,6 +58,10 @@
+ uint32_t port = AWS_IOT_MQTT_PORT;
+ bool messageArrivedOnDelta = false;
+ 
++static char ClientID[PATH_MAX + 1] = AWS_IOT_MQTT_CLIENT_ID;
++static char ThingName[PATH_MAX + 1] = AWS_IOT_MY_THING_NAME;
++
++
+ /*
+  * @note The delta message is always sent on the "state" key in the json
+  * @note Any time messages are bigger than AWS_IOT_MQTT_RX_BUF_LEN the underlying MQTT library will ignore it. The maximum size of the message that can be received is limited to the AWS_IOT_MQTT_RX_BUF_LEN
+@@ -95,6 +99,8 @@
+ 	DEBUG("rootCA %s", rootCA);
+ 	DEBUG("clientCRT %s", clientCRT);
+ 	DEBUG("clientKey %s", clientKey);
++	DEBUG("Thing-Name %s", ThingName);
++	DEBUG("Client-ID %s", ClientID);
+ 
+ 	parseInputArgsForConnectParams(argc, argv);
+ 
+@@ -103,8 +109,8 @@
+ 	aws_iot_mqtt_init(&mqttClient);
+ 
+ 	ShadowParameters_t sp = ShadowParametersDefault;
+-	sp.pMyThingName = AWS_IOT_MY_THING_NAME;
+-	sp.pMqttClientId = AWS_IOT_MQTT_CLIENT_ID;
++	sp.pMyThingName = ThingName;
++	sp.pMqttClientId = ClientID;
+ 	sp.pHost = AWS_IOT_MQTT_HOST;
+ 	sp.port = AWS_IOT_MQTT_PORT;
+ 	sp.pClientCRT = clientCRT;
+@@ -216,7 +222,7 @@
+ void parseInputArgsForConnectParams(int argc, char** argv) {
+ 	int opt;
+ 
+-	while (-1 != (opt = getopt(argc, argv, "h:p:c:"))) {
++	while (-1 != (opt = getopt(argc, argv, "h:p:c:T:I:"))) {
+ 		switch (opt) {
+ 		case 'h':
+ 			strcpy(HostAddress, optarg);
+@@ -230,6 +236,14 @@
+ 			strcpy(certDirectory, optarg);
+ 			DEBUG("cert root directory %s", optarg);
+ 			break;
++		case 'T':
++			strcpy(ThingName, optarg);
++			DEBUG("Thing name %s", ThingName);
++			break;
++		case 'I':
++			strcpy(ClientID, optarg);
++			DEBUG("Client ID %s", ClientID);
++			break;
+ 		case '?':
+ 			if (optopt == 'c') {
+ 				ERROR("Option -%c requires an argument.", optopt);
