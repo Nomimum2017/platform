@@ -118,6 +118,7 @@ done
 # Add select directory packages
 check_place_directory ../runeio/generic/Packages-Dir/package-lib-rune package
 check_place_directory ../runeio/generic/Packages-Dir/package-etc-rune package
+check_place_directory ../runeio/generic/Packages-Dir/package-rune-aws-iot-sdk package
 
 # Patch platform patches
 for i in `ls ../runeio/gl-ar150/Patches/* 2> /dev/null`; do
