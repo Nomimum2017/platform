@@ -1,0 +1,18 @@
+
+Subscribe:
+==========
+mosquitto_sub --cafile  ~/certs/Rune-ROOT-CA-cert.pem --cert ~/certs/Rune-EndDevice-cert.pem --key ~/certs/Rune-EndDevice-prikey.pem -h A1EY1YJM24R9FH.iot.us-east-1.amazonaws.com -p 8883  -d -t "\$aws/things/121ABC456DEF/shadow/get/accepted" -v
+
+Leave the thread subscribed, without terminating / interrupting.
+
+Publish:
+========
+mosquitto_pub --cafile  ~/certs/Rune-ROOT-CA-cert.pem --cert ~/certs/Rune-EndDevice-cert.pem --key ~/certs/Rune-EndDevice-prikey.pem -h A1EY1YJM24R9FH.iot.us-east-1.amazonaws.com -p 8883 -d -i 121ABC456DEF -t "\$aws/things/121ABC456DEF/shadow/get" -m ""
+
+
+****
+* At this time the Server will generated the desired-state document and Push it on the  /get/accepted Topic.
+* Note, the Publish of  /get happens using correct client id.  Where as the subscribe request should have a different client id.  e.g.  "${client_id}.listener"  etc.  Or some mosquitto_xxxx as default.  It will not work if the subscriber sends the same client id.
+*  This will only work with QOS 0.  This will not work with other QOS values
+*  The subscriber thread should already be Connected and Subscribed, before posting the PUBLISH to /get  Topic
+
