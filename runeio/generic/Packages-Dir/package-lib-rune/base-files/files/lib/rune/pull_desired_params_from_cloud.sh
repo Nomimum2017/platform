@@ -6,35 +6,31 @@ if [ ! -f /usr/certs/AWS_CONFIG_FILE ]; then
 fi
 
 source /usr/certs/AWS_CONFIG_FILE
-subtopic="$aws/things/<thing-name>/shadow/get/accepted"
-pubtopic="$aws/things/<thing-name>/shadow/get"
-tmpfilename=/tmp/desired_state.tmp
+subtopic="\$aws/things/${AWS_DEVICE_ID}/shadow/get/accepted"
+pubtopic="\$aws/things/${AWS_DEVICE_ID}/shadow/get"
+tmpfilename=/tmp/desired_device_state.json.tmp
+finalfilename=/tmp/desired_device_state.json
 
-msg="{\"msg\":\"\"}"
-/usr/bin/appsopenssl/subscribe_publish_sample  -S ${subtopic} -I ${AWS_DEVICE_ID}  -h ${AWS_PUBLISH_HOST} -p 8883 -c /usr/certs -x 10 -m ${msg} &> ${tmpfilename} &
-subpid=$!
-sleep 1
-/usr/bin/appsopenssl/subscribe_publish_sample  -P ${pubtopic} -I ${AWS_DEVICE_ID}  -h ${AWS_PUBLISH_HOST} -p 8883 -c /usr/certs -x 1 -m ${msg}
+msg=\"\"
+/usr/bin/appsopenssl/subscribe_publish_sample  -S ${subtopic}  -P ${pubtopic}  \
+	 -I ${AWS_DEVICE_ID}.listener -o ${tmpfilename} -h ${AWS_PUBLISH_HOST} \
+	-p 8883 -c /usr/certs -x 1 -m ${msg}
+rc=$?
 if [ $? -ne 0 ]; then
-	echo "$0: Failed to publish Get-Req on Topic: ${pubtopic}."
+	echo "$0: Failed to receive Desired-Device-State params from Cloud. AWS-IOT-Err: ${rc}"
 	exit 2
 fi
-sleep 1
-kill ${subpid}
-sleep 1
-
-/bin/grep firmware ${tmpfilename}
-if [ $? -ne 0 ]; then
-	echo "$0: Failed to retreive Device-Desired-Parameters from Cloud-Server. Failed file in ${tmpfilename}"
-	exit 3
+if [ ! -e ${tmpfilename} ]; then
+	echo "$0: No output json doc in ${tmpfilename} found"
+	exit 3 
 fi
-filename=/tmp/desired_state.$(($(date +%s%N)/1000000)) 
-linkfile=/tmp/desired_state.curr
-
-rm -f ${linkfile}
-rm -f ${filename}.prev
-mv -f ${filename} ${filename}.prev
-mv -f ${tmpfilename} ${filename}
-ln -sf ${filename} ${linkfile}
-echo "Desired state document is in ${linkfile} -- ${filename}"
+/bin/grep -q firmware ${tmpfilename}
+if [ $? -ne 0 ]; then
+        echo "$0: Invalid / missing parameters in ${tmpfilename}"
+        exit 4
+fi
+rm -f ${finalfilename}.prev
+mv -f ${finalfilename} ${finalfilename}.prev
+mv -f ${tmpfilename} ${finalfilename}
+echo "$0: Desired-Device-State json doc in: ${finalfilename}"
 exit 0
