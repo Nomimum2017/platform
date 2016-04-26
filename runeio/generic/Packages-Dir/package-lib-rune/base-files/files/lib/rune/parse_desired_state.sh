@@ -58,7 +58,7 @@ parse_desiredstatedoc_params () {
 }
 
 
-desiredstatedoc="/tmp/desired_state.curr"
+desiredstatedoc="/tmp/desired_device_state.json"
 if [ ! -e ${desiredstatedoc ]; then
 	echo "$0: Desired state doc: ${desiredstatedoc} not found"
 	exit 1
