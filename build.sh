@@ -117,7 +117,7 @@ for i in `ls ../runeio/generic/Packages-Tarball/* 2> /dev/null`; do
 done
 
 # Add select directory packages
-check_place_directory ../runeio/generic/Packages-Dir/rune-lib package/base-files/files/lib
+check_place_directory ../runeio/generic/Packages-Dir/rune-lib package/base-files/files/lib/rune
 check_place_directory ../runeio/generic/Packages-Dir/rune-etc package/base-files/files/etc
 check_place_directory ../runeio/generic/Packages-Dir/rune-aws-iot-sdk package/utils/aws-iot/
 
