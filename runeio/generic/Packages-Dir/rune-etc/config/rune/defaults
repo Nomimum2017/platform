@@ -1,0 +1,51 @@
+# build epoch. Will be read out from image data
+firmware_build_epoch=0
+
+# firmware_path is not stored on system. Used only for pull-down of new image
+firmware_path=/doesnotmatter
+
+
+# firmware_md5 ...not needed
+firmware_md5=009deadbeef900
+
+# Network scan discovery via  finger / arp
+devfinger_interval=0
+
+# Network scan discovery via nmap
+netfinger_interval=0
+
+# Host IDS signature
+hids_signature=0
+
+# Host IDS signature file download path
+hids_sig_path=/doesnotmatter
+
+# Host IDS signature file md5
+hids_sig_md5=0
+
+# Host IDS logs reporting interval
+hids_interval=0
+
+# Firewall logs reporting interval
+fw_interval=0
+
+# Squid proxy logs reporting interval
+proxy_interval=0
+
+# AntiVirus signature
+av_signature=0
+
+# AntiVirus signature file download path
+av_sig_path=0
+
+# AntiVirus signature file md5
+av_sig_md5=0
+
+# AntiVirus logs reporting interval
+av_interval=0
+
+# DNS whitelist logs reporting interval
+dns_interval=0
+
+# NetFlow logging records reporting interval
+flow_interval=0
