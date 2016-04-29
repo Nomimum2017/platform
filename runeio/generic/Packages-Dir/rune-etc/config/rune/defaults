@@ -1,3 +1,8 @@
+# Initial defaults for operation of features in Rune System
+# Mostly the reporting / log-upload  intervals for various features
+#
+
+
 # build epoch. Will be read out from image data
 firmware_build_epoch=0
 
@@ -9,10 +14,10 @@ firmware_path=/doesnotmatter
 firmware_md5=009deadbeef900
 
 # Network scan discovery via  finger / arp
-devfinger_interval=0
+devfinger_interval=1800
 
 # Network scan discovery via nmap
-netfinger_interval=0
+netfinger_interval=1800
 
 # Host IDS signature
 hids_signature=0
@@ -24,28 +29,28 @@ hids_sig_path=/doesnotmatter
 hids_sig_md5=0
 
 # Host IDS logs reporting interval
-hids_interval=0
+hids_interval=1800
 
 # Firewall logs reporting interval
-fw_interval=0
+fw_interval=1800
 
 # Squid proxy logs reporting interval
-proxy_interval=0
+proxy_interval=1800
 
 # AntiVirus signature
 av_signature=0
 
 # AntiVirus signature file download path
-av_sig_path=0
+av_sig_path=/doesnotmatter
 
 # AntiVirus signature file md5
-av_sig_md5=0
+av_sig_md5=1800
 
 # AntiVirus logs reporting interval
-av_interval=0
+av_interval=1800
 
 # DNS whitelist logs reporting interval
-dns_interval=0
+dns_interval=1800
 
 # NetFlow logging records reporting interval
-flow_interval=0
+flow_interval=1800
