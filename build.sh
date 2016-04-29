@@ -107,19 +107,19 @@ if [ $? -ne 0 ]; then
 fi
 
 # Add platform tarball packages
-for i in `ls ../runeio/gl-ar150/Packages-Tarball/* 2> /dev/null`; do
+for i in `ls ../runeio/gl-ar150/tarball-packages/* 2> /dev/null`; do
 	check_expand_tarball_packages ${i}
 done
 
 # Add runeio generic packages
-for i in `ls ../runeio/generic/Packages-Tarball/* 2> /dev/null`; do
+for i in `ls ../runeio/generic/tarball-packages/* 2> /dev/null`; do
 	check_expand_tarball_packages ${i}
 done
 
 # Add select directory packages
-check_place_directory ../runeio/generic/Packages-Dir/rune-lib package/base-files/files/lib/rune
-check_place_directory ../runeio/generic/Packages-Dir/rune-etc package/base-files/files/etc
-check_place_directory ../runeio/generic/Packages-Dir/rune-aws-iot-sdk package/utils/aws-iot/
+check_place_directory ../runeio/generic/dir-packages/rune-lib package/base-files/files/lib/rune
+check_place_directory ../runeio/generic/dir-packages/rune-etc package/base-files/files/etc
+check_place_directory ../runeio/generic/dir-packages/rune-aws-iot-sdk package/utils/aws-iot/
 
 # Patch platform patches
 for i in `ls ../runeio/gl-ar150/Patches/* 2> /dev/null`; do
