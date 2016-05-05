@@ -2,13 +2,16 @@
 # Mostly the reporting / log-upload  intervals for various features
 #
 
+device_checkin_interval=30
+firmware_upgrade_check_interval=30
+hids_signature_upgrade_interval=300
+av_signature_upgrade_interval=300
 
 # build epoch. Will be read out from image data
 firmware_build_epoch=0
 
 # firmware_path is not stored on system. Used only for pull-down of new image
 firmware_path=/doesnotmatter
-
 
 # firmware_md5 ...not needed
 firmware_md5=009deadbeef900
