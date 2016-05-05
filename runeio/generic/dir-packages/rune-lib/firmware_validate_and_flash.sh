@@ -114,11 +114,11 @@ case ${boardname} in
 esac
 
 # flash it
-echo "$0: Flashing file: ${new_fw_image_file}"
+echo "$0: Flashing file: ${imagefile}"
 
 set -x
-#mtd -r write ${imagefile} firmware
+mtd -r write ${imagefile} firmware
 rc=$?
 set - -x
-echo "Done Flashing"
+echo "$0: Done Flashing"
 exit ${rc}
