@@ -2,8 +2,8 @@
 # Mostly the reporting / log-upload  intervals for various features
 #
 
-device_checkin_interval=30
-firmware_upgrade_check_interval=30
+device_checkin_interval=60
+firmware_upgrade_check_interval=60
 hids_signature_upgrade_interval=300
 av_signature_upgrade_interval=300
 

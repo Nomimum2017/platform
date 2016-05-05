@@ -153,7 +153,7 @@ feature_12_name="rune-netflow-log-report-push"
 feature_12_interval_str="flow_interval"
 
 let num_feature=3
-let periodic_sleep_secs=10
+let periodic_sleep_secs=60
 
 
 param_1=firmware_build_epoch
