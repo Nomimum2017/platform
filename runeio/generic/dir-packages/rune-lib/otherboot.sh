@@ -21,7 +21,7 @@ fi
 echo "post_aws_iot.sh  returned $? called from $0"
 
 #	Kick off other Rune System activities
-echo "$0 Starting rune-main.sh"
-./rune-main.sh
-echo "$0  Done with rune-main.sh RC: $?"
+echo "$0 Starting rune_manager.sh"
+./rune_manager.sh
+echo "$0  Done with rune_manager.sh RC: $?"
 exit 0
