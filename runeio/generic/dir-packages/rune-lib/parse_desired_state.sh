@@ -3,7 +3,7 @@
 
 . /usr/share/libubox/jshn.sh
 
-parse_desiredstatedoc_params () {
+parse_desiredstatedoc_params_into_vars () {
 	json_select state
 	json_select desired
 
@@ -58,12 +58,13 @@ parse_desiredstatedoc_params () {
 }
 
 
-desiredstatedoc="/tmp/desired_device_state.json"
-if [ ! -e ${desiredstatedoc} ]; then
-	echo "$0: Desired state doc: ${desiredstatedoc} not found"
-	exit 1
-fi
-MSG=`cat ${desiredstatedoc}`
-json_load "$MSG"
-
-# parse_desiredstatedoc_params
+parse_desiredstatedoc_params() {
+	desiredstatedoc="/tmp/desired_device_state.json"
+	if [ ! -e ${desiredstatedoc} ]; then
+		echo "$0: Desired state doc: ${desiredstatedoc} not found"
+		exit 1
+	fi
+	MSG=`cat ${desiredstatedoc}`
+	json_load "$MSG"
+	parse_desiredstatedoc_params_into_vars
+}

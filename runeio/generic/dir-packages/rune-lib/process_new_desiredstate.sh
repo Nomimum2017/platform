@@ -99,6 +99,8 @@ change_flow_interval () {
 	echo "change_flow_interval"
 }
 
+rune_params_reload=/tmp/rune_params_reload
+
 compare_process_param_change () {
 #	echo "In param: $1  $2"
 
@@ -107,41 +109,38 @@ compare_process_param_change () {
 	a=new_${1}
 	new_val=$(eval echo \$$a)
 #	echo "$a : $new_val"
-	call_func=change_${1}
+#	call_func=change_${1}
 	msg=${2}
 
 	if [ ${new_val} != ${old_val} ]; then
 		echo "$0: Desired State param ${msg} changed to ${new_val} from ${old_val}"
-		eval ${1}=${new_val}
-		${call_func}
+#		eval ${1}=${new_val}
+		# We will load changes into core variables at end of proc loop
+		echo "${1}=${new_val}" >> ${tmp_params_reload}
+#		${call_func}
 		echo "var: $1 is now set to $(eval echo \$$1)"
 	fi
 }
 
 
-get_sys_var_param_firmware_build_epoch () {
-	firmware_build_epoch=`./versionBuildDate.sh | cut -d' ' -f4`
+
+initialize_sys_var_from_system () {
+
+	# We want to generate initial values for system data.
+	# But only firmware_build_epoch has such a system dependency.    
+	get_sys_var_param_firmware_build_epoch
+
+	# Generate all initial system values from system functions.
+	
+#	# Modify select vars for deriving from system data
+#	for i in `seq 1 ${params_list_len}`; do
+#		a=param_$i
+#		pvar=$(eval echo \$$a)
+#		get_sys_var_param_$(eval echo \$$a)
+#		echo "var: ${pvar} is now: $(eval echo \$$pvar)"
+#	done
 }
 
-get_sys_var_param_firmware_path () {
-	firmware_path=doesnotmatter
-}
-
-get_sys_var_param_firmware_md5 () {
-	firmware_md5=doesnotmatter
-}
-
-get_sys_var_param_devfinger_interval () {
-	devfinger_interval=0
-}
-
-get_sys_var_param_netfinger_interval () {
-	netfinger_interval=0
-}
-
-get_sys_var_param_hids_signature () {
-	hids_signature=doesnotmatter
-}
 
 . /lib/rune/parse_desired_state.sh
 parse_desiredstatedoc_params
@@ -182,12 +181,8 @@ param_name_15='AV interval'
 param_name_16='DNS interval'
 param_name_17='Flow interval'
 
-#params_list=( firmware_build_epoch firmware_path firmware_md5 devfinger_interval netfinger_interval hids_signature hids_sig_path hids_sig_md5 hids_interval fw_interval proxy_interval av_signature av_sig_path av_sig_md5 av_interval dns_interval flow_interval )
-#params_names_list=( 'Firmware Build epoch' 'Firmware Build path' 'Firmware md5' 'DevFinger interval' 'NetFinger interval' 'HIDS signature' 'HIDS signature path' 'HIDS signature md5' 'HIDS interval' 'FW interval' 'Proxy interval' 'AV signature' 'AV signature path' 'AV signature md5' 'AV interval' 'DNS interval' 'Flow interval' ) 
-#params_list_len=${#params_list[@]}
-#params_names_list_len=$(#params_names_list[$]}
-params_list_len=6
-params_names_list_len=6
+params_list_len=4
+params_names_list_len=4
 
 if [ ${params_list_len} != ${params_names_list_len} ]; then
 	echo "Mismatched array sizes.  params_list:${params_list_len}  and params_names_list:${params_names_list_len}"
@@ -195,18 +190,6 @@ if [ ${params_list_len} != ${params_names_list_len} ]; then
 fi
 
 
-# Read in actual or dummy defaults for current variables state
-. /etc/config/rune/default
-
-# Modify select vars for deriving from system data
-for i in `seq 1 ${params_list_len}`; do
-	a=param_$i
-	pvar=$(eval echo \$$a)
-	get_sys_var_param_$(eval echo \$$a)
-	echo "var: ${pvar} is now: $(eval echo \$$pvar)"
-done
-
-#for ( i=0; i<${params_list_len}; i++ ); do
 for i in `seq 1 ${params_list_len}`; do
 	a=param_$i
 	b=param_name_$i
