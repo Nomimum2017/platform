@@ -57,6 +57,8 @@ set_ow_build_timestamps () {
 # ensure we are in openwrt/ directory
 	touch package/base-files/files/etc/init.d/sysfixtime
 	export KBUILD_BUILD_TIMESTAMP=`date "+%F %H:%M:%S"; echo $(($(date +%s%N)/10000000))`
+	echo "Image Build epoch set to: ${KBUILD_BUILD_TIMESTAMP}"
+	echo ${KBUILD_BUILD_TIMESTAMP} > ../epoch
 }
 
 build_openwrt () {
