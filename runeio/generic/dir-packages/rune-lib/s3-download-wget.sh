@@ -1,11 +1,11 @@
 #!/bin/sh
 #
-# Upload a file to Amazon AWS S3 using Signature Version 4
+# Download a file from Amazon AWS S3 using Signature Version 4
 #
 
 usage() {
-	echo "Usage:  $0  [ -f <Local-File> ]  -u <AWS-URL>"
-	echo "            [ -k <AWS-key> -s <AWS-secret> -b <AWS-bucket> ]"
+	echo "Usage:  $0  -u <AWS-URL>  [ -f <Local-File> ]"
+	echo "            [ -k <AWS-key> -s <AWS-secret> ]"
 	exit 1
 }
 
@@ -31,7 +31,6 @@ while [ $# -gt 1 ]; do
 		-u)     geturl="$2" ;;
                 -k)     awsAccess="$2" ;;
                 -s)     awsSecret="$2" ;;
-                -b)     awsBucket="$2" ;;
 		-h)	usage ;;
                 *)      usage ;;
         esac
