@@ -21,7 +21,7 @@ action_firmware_upgrade_check() {
 	if [ ${new_firmware_build_epoch} -gt ${firmware_build_epoch} ]; then
 		echo "Flashing"
 		./firmware_s3_download_and_flash.sh \
-			${new_firmware_path} ${new_firmware_md5}
+			-p ${new_firmware_path} -m ${new_firmware_md5}
 	fi
 	echo "Done Firmware upgrade"
 }
