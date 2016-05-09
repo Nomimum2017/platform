@@ -1,0 +1,287 @@
+
+Device gl_ar150 OpenWRT Router was tested with current software as of May-9th early morning.
+
+	The device boots fine,
+	Obtains DHCP allocated address from the DSL modem on WAN port,
+	Setups a DHCP pool to serve further clients on the LAN port,
+	Contacts NTP server and obtains Time Synch info,
+	Contacts other server (8.8.8.8) to declare NetsAreUP,
+	Sends first Report to Rune established AWS-IOT topic,
+	Periodically gets Desired State Parameters JSON file,
+	Compares and finds any changes to Desired parameters and acts on it,
+	(** Currently only 3 parameters are scanned in the Rune-System-Manager loop **)
+	(** gl_ar150 was running Latest build. epoch comparisons skipped new re-flash **)
+
+	Responds to DHCP Discover and Alloc-Requests on the LAN port,
+	The LAN client (Linux laptop) was able to obtain an IP address (RFC1918 in IPv4 zone)
+	The LAN client was able to reach out to public internet hosts.
+
+	The gl_ar150 checks-in with the AWS-IOT every 30 seconds
+
+Topology:
+
+	DSL_line ----> DSL_Modem ---->  W...-gl_ar150-...L ----> Laptop
+
+	* DSL_mode was Siemens SpeedStream 4100
+	* For this test, PPPoE was configured to negotiate on DSL_modem directly itself.
+        * Laptop was wired directly to the LAN port of gl_ar150
+
+
+
+
+
+gl_ar150 logs:
+==============
+
+root@OpenWrt:/tmp# uname -a
+Linux OpenWrt 3.18.23 #1 2016-05-05 06:22:32 146245455259 mips GNU/Linux
+
+root@OpenWrt:/tmp# cat desired_device_state.json
+{"state":{"desired":{"firmware":{"build":"146245455259","path":"s3://rune-alpha-
+firmware/121ABC456DEF/openwrt-ar71xx-generic-gl_ar150-squashfs-sysupgrade.146245
+455259.bin.cmp.gz","md5":"cba2411436de0fdd44ee83e1ff78b73c"},"devfinger":{"inter
+val":300},"netfinger":{"interval":300},"userconfig":{"config":"1459198974","<TBD
+>":"<TBD>","interval":30},"hids":{"signature":"abc4567890","path":"https://https
+://s3.amazonaws.com/rune-dev-hids/abc4567890/signature.gz","md5":"52b547664f9bf5
+60852503a3abb1730","interval":60},"fw":{"interval":120},"proxy":{"interval":30},
+"av":{"signature":"1234567890","path":"https://https://s3.amazonaws.com/rune-dev
+-av/1234567890/signature.gz","md5":"96b547664f9bf560852503a3abb7279","interval":
+300},"dns":{"interval":300},"flow":{"interval":300},"mynewdata":999}
+
+root@OpenWrt:/tmp# cat otherboot.sh.log 
+./checkwannetworkready.sh: checking for WAN to be ready
+Thu May  5 14:02:21 UTC 2016
+./checkwannetworkready.sh: Pinging 8.8.8.8
+Ping to 8.8.8.8 failed
+./checkwannetworkready.sh: checking for WAN to be ready
+Thu May  5 14:02:36 UTC 2016
+./checkwannetworkready.sh: Pinging 8.8.8.8
+./checkwannetworkready.sh: Host 8.8.8.8 is reachable
+./waitntptimeadjusted.sh: waiting for NTP to set/adjust time
+Thu May  5 14:02:47 UTC 2016
+./waitntptimeadjusted.sh: NTP has set/adjusted time
+Mon May  9 16:57:50 UTC 2016
+Final json is: { "Topic": "OtherBoot Data", "macaddr": "E4:95:6E:40:63:AC", "Bui
+lldDate": "1 2016-05-05 06:22:32 146245455259", "Built_By": "(irfan@w510)", "Kern
+el": "3.18.23", "WAN_IP_address": "68.121.111.159", "kernel": "3.18.23", "hostna
+me": "OpenWrt", "system": "Atheros AR9330 rev 1", "model": "gl_ar150", "release"
+: { "distribution": "OpenWrt", "version": "Chaos Calmer", "revision": "r48430", 
+"codename": "chaos_calmer", "target": "ar71xx\/generic", "description": "OpenWrt
+ Chaos Calmer 15.05" }, "uptime": 75, "localtime": 1462813072, "load": [ 46784, 
+17728, 6400 ], "memory": { "total": 62648320, "free": 27287552, "shared": 65536,
+ "buffered": 3338240 }, "swap": { "total": 0, "free": 0 } }
+Compressing /tmp/otherbootdata.dump via gzip
+-rw-r--r--    1 root     root           686 May  9 16:57 /tmp/otherbootdata.dump
+gzip RC: 0
+-rw-r--r--    1 root     root           430 May  9 16:57 /tmp/otherbootdata.dump
+.gz
+Key AKIAJZ5FJVQVESVPTO3Q
+Secret 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
+Bucket rune-upload-d37c4bd756fde5287fa52b12ba9b40c9
+UPath 12345678901
+Device 121ABC456DEF
+File /tmp/otherbootdata.dump.gz otherbootdata.dump.gz
+Uploading gzip-compressed File:  /tmp/otherbootdata.dump.gz ->  /rune-upload-d37
+c4bd756fde5287fa52b12ba9b40c9/12345678901/121ABC456DEF/1462813072417/otherbootda
+ta.dump.gz
+PostURL: https://rune-upload-d37c4bd756fde5287fa52b12ba9b40c9.s3.amazonaws.com/1
+2345678901/121ABC456DEF/1462813072417/otherbootdata.dump.gz
+--2016-05-09 16:57:53--  https://rune-upload-d37c4bd756fde5287fa52b12ba9b40c9.s3
+.amazonaws.com/12345678901/121ABC456DEF/1462813072417/otherbootdata.dump.gz
+Resolving rune-upload-d37c4bd756fde5287fa52b12ba9b40c9.s3.amazonaws.com... 54.23
+1.82.154
+Connecting to rune-upload-d37c4bd756fde5287fa52b12ba9b40c9.s3.amazonaws.com|54.2
+31.82.154|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 0
+Saving to: 'STDOUT'
+
+     0K                                                        0.00 =0s
+
+2016-05-09 16:57:54 (0.00 B/s) - written to stdout [0/0]
+
+
+Return code is: 0
+DEBUG:   parseInputArgsForConnectParams L#137 Publish topic device/upload
+DEBUG:   parseInputArgsForConnectParams L#145 Client ID 121ABC456DEF
+DEBUG:   parseInputArgsForConnectParams L#113 Host A1EY1YJM24R9FH.iot.us-east-1.
+amazonaws.com
+DEBUG:   parseInputArgsForConnectParams L#117 arg 8883
+DEBUG:   parseInputArgsForConnectParams L#121 cert root directory /usr/certs
+DEBUG:   parseInputArgsForConnectParams L#125 publish 2 times
+
+DEBUG:   parseInputArgsForConnectParams L#149 Payload Message {"msg":"https://ru
+ne-upload-d37c4bd756fde5287fa52b12ba9b40c9.s3.amazonaws.com/12345678901/121ABC45
+6DEF/1462813072417/otherbootdata.dump.gz"}
+
+AWS IoT SDK Version 1.1.0-
+
+DEBUG:   main L#196 rootCA /usr/certs/Rune-ROOT-CA-cert.pem
+DEBUG:   main L#197 clientCRT /usr/certs/Rune-EndDevice-cert.pem
+DEBUG:   main L#198 clientKey /usr/certs/Rune-EndDevice-prikey.pem
+DEBUG:   main L#199 Sub-Topic sdkTest/sub
+DEBUG:   main L#200 Pub-Topic device/upload
+DEBUG:   main L#201 Client-ID 121ABC456DEF
+DEBUG:   main L#202 Subscribe No
+DEBUG:   main L#203 Publish ON
+Connecting...
+Connected
+Publish attempted. rc: 0
+Publish attempted. rc: 0
+All Publish done
+
+post_aws_iot.sh  returned 0 called from /lib/rune/otherboot.sh
+/lib/rune/otherboot.sh Starting rune_manager.sh
+Rune-System Manager starting
+DEBUG:   parseInputArgsForConnectParams L#129 Subscribe topic $aws/things/121ABC
+456DEF/shadow/get/accepted
+DEBUG:   parseInputArgsForConnectParams L#137 Publish topic $aws/things/121ABC45
+6DEF/shadow/get
+DEBUG:   parseInputArgsForConnectParams L#145 Client ID 121ABC456DEF.listener
+DEBUG:   parseInputArgsForConnectParams L#153 Filename for subscription delivere
+d messages /tmp/desired_device_state.json.tmp
+DEBUG:   parseInputArgsForConnectParams L#113 Host A1EY1YJM24R9FH.iot.us-east-1.
+amazonaws.com
+DEBUG:   parseInputArgsForConnectParams L#117 arg 8883
+DEBUG:   parseInputArgsForConnectParams L#121 cert root directory /usr/certs
+DEBUG:   parseInputArgsForConnectParams L#125 publish 1 times
+
+DEBUG:   parseInputArgsForConnectParams L#149 Payload Message ""
+
+AWS IoT SDK Version 1.1.0-
+
+DEBUG:   main L#196 rootCA /usr/certs/Rune-ROOT-CA-cert.pem
+DEBUG:   main L#197 clientCRT /usr/certs/Rune-EndDevice-cert.pem
+DEBUG:   main L#198 clientKey /usr/certs/Rune-EndDevice-prikey.pem
+DEBUG:   main L#199 Sub-Topic $aws/things/121ABC456DEF/shadow/get/accepted
+DEBUG:   main L#200 Pub-Topic $aws/things/121ABC456DEF/shadow/get
+DEBUG:   main L#201 Client-ID 121ABC456DEF.listener
+DEBUG:   main L#202 Subscribe ON
+DEBUG:   main L#203 Publish ON
+DEBUG:   main L#204 Subscription Messages File: /tmp/desired_device_state.json.t
+mp
+Opened subscription output file: /tmp/desired_device_state.json.tmp
+Connecting...
+Connected
+Subscribing...
+Subscribed
+
+Publish attempted. rc: 0
+Subscribe callback
+$aws/things/121ABC456DEF/shadow/get/accepted    {"state":{"desired":{"firmware":
+{"build":"146245455259","path":"s3://rune-alpha-firmware/121ABC456DEF/openwrt-ar
+71xx-generic-gl_ar150-squashfs-sysupgrade.146245455259.bin.cmp.gz","md5":"cba241
+1436de0fdd44ee83e1ff78b73c"},"devfinger":{"interval":300},"netfinger":{"interval
+":300},"userconfig":{"config":"1459198974","<TBD>":"<TBD>","interval":30},"hids"
+:{"signature":"abc4567890","path":"https://https://s3.amazonaws.com/rune-dev-hid
+s/abc4567890/signature.gz","md5":"52b547664f9bf560852503a3abb1730","interval":60
+},"fw":{"interval":120},"proxy":{"interval":30},"av":{"signature":"1234567890","
+path":"https://https://s3.amazonaws.com/rune-dev-av/1234567890/signature.gz","md
+5":"96b547664f9bf560852503a3abb7279","interval":300},"dns":{"interval":300},"flo
+w":{"interval":300},"mynewdata":999},"delta":{"firmware":{"build":"146245455259"
+,"path":"s3://rune-alpha-firmware/121ABC456DEF/openwrt-ar71xx-generic-gl_ar150-s
+quashfs-sysupgrade.146245455259.bin.cmp.gz","md5":"cba2411436de0fdd44ee83e1ff78b
+73c"},"devfinger":{"interval":300},"netfinger":{"interval":300},"userconfig":{"c
+onfig":"1459198974","<TBD>":"<TBD>","interval":30},"hids":{"signature":"abc45678
+90","path":"https://https://s3.amazonaws.com/rune-dev-hids/abc4567890/signature.
+gz","md5":"52b547664f9bf560852503a3abb1730","interval":60},"fw":{"interval":120}
+,"proxy":{"interval":30},"av":{"signature":"1234567890","path":"https://https://
+s3.amazonaws.com/rune-dev-av/1234567890/signature.gz","md5":"96b547664f9bf560852
+503a3abb7279","interval":300},"dns":{"interval":300},"flow":{"interval":300},"my
+newdata":999}},"metadata":{"desired":{"firmware":{"build":{"timestamp":146245761
+1},"path":{"timestamp":1462457611},"md5":{"timestamp":1462457611}},"devfinger":{
+"interval":{"timestamp":1462457611}},"netfinger":{"interval":{"timestamp":146245
+7611}},"userconfig":{"config":{"timestamp":1462457611},"<TBD>":{"timestamp":1461
+732780},"interval":{"timestamp":1462457611}},"hids":{"signature":{"timestamp":14
+62457611},"path":{"timestamp":1462457611},"md5":{"timestamp":1462457611},"interv
+al":{"timestamp":1462457611}},"fw":{"interval":{"timestamp":1462457611}},"proxy"
+:{"interval":{"timestamp":1462457611}},"av":{"signature":{"timestamp":1462457611
+},"path":{"timestamp":1462457611},"md5":{"timestamp":1462457611},"interval":{"ti
+mestamp":1462457611}},"dns":{"interval":{"timestamp":1462457611}},"flow":{"inter
+val":{"timestamp":1462457611}},"mynewdata":{"timestamp":1462457611}}},"version":
+15,"timestamp":1462813143}
+All Publish done
+
+mv: can't rename '/tmp/desired_device_state.json': No such file or directory
+./pull_desired_params_from_cloud.sh: Desired-Device-State json doc in: /tmp/desi
+red_device_state.json
+./rune_manager.sh: Desired State param Firmware Build path changed to s3://rune-
+alpha-firmware/121ABC456DEF/openwrt-ar71xx-generic-gl_ar150-squashfs-sysupgrade.
+146245455259.bin.cmp.gz from /doesnotmatter
+./rune_manager.sh: Desired State param Firmware md5 changed to cba2411436de0fdd4
+4ee83e1ff78b73c from 009deadbeef900
+./rune_manager.sh: Desired State param DevFinger interval changed to 300 from 18
+00
+Config: 60  Slept: 60
+Running feature-1: rune-firmware-upgrade-check after 60 secs. Cmd: action_firmwa
+re_upgrade_check
+donothing
+Firmware upgrade check and process
+Done Firmware upgrade
+Config: 1800  Slept: 60
+Config: 1800  Slept: 60
+Here1
+Here2
+DEBUG:   parseInputArgsForConnectParams L#129 Subscribe topic $aws/things/121ABC
+456DEF/shadow/get/accepted
+DEBUG:   parseInputArgsForConnectParams L#137 Publish topic $aws/things/121ABC45
+6DEF/shadow/get
+DEBUG:   parseInputArgsForConnectParams L#145 Client ID 121ABC456DEF.listener
+DEBUG:   parseInputArgsForConnectParams L#153 Filename for subscription delivere
+d messages /tmp/desired_device_state.json.tmp
+DEBUG:   parseInputArgsForConnectParams L#113 Host A1EY1YJM24R9FH.iot.us-east-1.
+amazonaws.com
+DEBUG:   parseInputArgsForConnectParams L#117 arg 8883
+DEBUG:   parseInputArgsForConnectParams L#121 cert root directory /usr/certs
+
+
+
+
+Laptop Client:
+==============
+[irfan@w510 platform]$ ifconfig
+enp0s25: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 192.168.1.246  netmask 255.255.255.0  broadcast 192.168.1.255
+        inet6 fe80::f2de:f1ff:fe03:dc05  prefixlen 64  scopeid 0x20<link>
+        inet6 fd86:45ec:fa10::1fe  prefixlen 128  scopeid 0x0<global>
+        inet6 fd86:45ec:fa10:0:f2de:f1ff:fe03:dc05  prefixlen 64  scopeid 0x0<global>
+        ether f0:de:f1:03:dc:05  txqueuelen 1000  (Ethernet)
+        RX packets 37672  bytes 38664139 (36.8 MiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 27679  bytes 17046826 (16.2 MiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+        device interrupt 20  memory 0xf2600000-f2620000  
+
+[irfan@w510 platform]$ netstat -r
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags   MSS Window  irtt Iface
+default         OpenWrt.lan     0.0.0.0         UG        0 0          0 enp0s25
+192.168.1.0     0.0.0.0         255.255.255.0   U         0 0          0 enp0s25
+192.168.122.0   0.0.0.0         255.255.255.0   U         0 0          0 virbr0
+
+[irfan@w510 platform]$ ping 8.8.8.8
+PING 8.8.8.8 (8.8.8.8) 56(84) bytes of data.
+64 bytes from 8.8.8.8: icmp_seq=1 ttl=53 time=14.3 ms
+64 bytes from 8.8.8.8: icmp_seq=2 ttl=53 time=14.1 ms
+
+[irfan@w510 docs]$ ping www.google.com
+PING www.google.com (216.58.217.196) 56(84) bytes of data.
+64 bytes from lax17s05-in-f4.1e100.net (216.58.217.196): icmp_seq=1 ttl=55 time=26.8 ms
+64 bytes from lax17s05-in-f4.1e100.net (216.58.217.196): icmp_seq=2 ttl=55 time=25.5 ms
+
+May  9 10:05:49 w510 NetworkManager[921]: <info>  dhclient started with pid 15329
+May  9 10:05:49 w510 NetworkManager[921]: <info>  Activation (enp0s25) Stage 3 of 5 (IP Configure Start) complete.
+May  9 10:05:49 w510 NetworkManager[921]: <info>  (enp0s25): DHCPv4 state changed nbi -> preinit
+May  9 10:05:49 w510 dhclient[15329]: DHCPREQUEST on enp0s25 to 255.255.255.255 port 67 (xid=0xef80690e)
+May  9 10:05:49 w510 dhclient[15329]: DHCPACK from 192.168.1.1 (xid=0xef80690e)
+May  9 10:05:49 w510 NetworkManager[921]: <info>  (enp0s25): DHCPv4 state changed preinit -> reboot
+May  9 10:05:49 w510 NetworkManager[921]: <info>    address 192.168.1.246
+May  9 10:05:49 w510 NetworkManager[921]: <info>    plen 24 (255.255.255.0)
+May  9 10:05:49 w510 NetworkManager[921]: <info>    gateway 192.168.1.1
+May  9 10:05:49 w510 NetworkManager[921]: <info>    server identifier 192.168.1.1
+May  9 10:05:49 w510 NetworkManager[921]: <info>    lease time 43200
+May  9 10:05:49 w510 NetworkManager[921]: <info>    hostname 'w510'
+May  9 10:05:49 w510 NetworkManager[921]: <info>    nameserver '192.168.1.1'
+May  9 10:05:49 w510 NetworkManager[921]: <info>    domain name 'lan'
+
+
