@@ -1,0 +1,7 @@
+#!/bin/sh
+
+cp /etc/epoch /tmp/sqm.config.epoch.eth0
+cp /etc/epoch /tmp/sqm.config.epoch.eth1
+
+# exit 1, so we stay permanent for each bootup
+exit 1
