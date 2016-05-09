@@ -53,6 +53,11 @@ check_run_shell_script () {
 	return 1
 }
 
+add_epoch_info_into_image_rfs () {
+	echo "${KBUILD_BUILD_TIMESTAMP}" > package/base-files/files/etc/epoch_full_date
+	echo "${KBUILD_BUILD_TIMESTAMP}" | cut -f3 -d' ' > package/base-files/files/etc/epoch
+}
+
 set_ow_build_timestamps () {
 # ensure we are in openwrt/ directory
 	touch package/base-files/files/etc/init.d/sysfixtime
@@ -72,6 +77,7 @@ build_openwrt () {
 
 build_all () {
 	set_ow_build_timestamps
+	add_epoch_info_into_image_rfs
 	build_openwrt
 	ret=$?
 	echo "$0: finished at `date`"
