@@ -1,0 +1,79 @@
+
+
+There are multiple methods to flash GL-AR150 with desired firmware.
+
+The steps must be carefully undertaken, to avoid bricking the Router.
+
+
+Firmware Requirements:
+======================
+
+1.  The firmware to be flashed must be a one built by OpenWRT,  must have the Root-FileSystem packed as SquashFS in the overall firmware image, and be of type sysupgrade.
+
+Typical filenames are:  openwrt-ar71xx-generic-gl_ar150-squashfs-sysupgrade.bin
+
+In future we will overload the filename to hid the epoch string, to make image manipulations easier.
+So the filenames will become something of the sorts:  openwrt-ar71xx-generic-gl_ar150-squashfs-sysupgrade-epoch-3280094361.bin
+
+2.  Firmware must a one built for ar71xx CPU, and gl-ar150 subtarget
+
+
+Obtaining Firmware:
+===================
+
+Firmware may be obtained from either of:
+
+1.  Already available on S3.
+  e.g. aws s3 cp  s3://rune-alpha-firmware/121ABC456DEF/openwrt-ar71xx-generic-gl_ar150-squashfs-sysupgrade.146245455259.bin
+
+2.  If firmware is gzip compressed, it must be un'gzip'ed prior to use.
+
+3.  Firmware has embedded AWS IOT certificates and THing Name.  These must be manipulated prior to flashing, and matched with Device Serial-# or Mac-Addresses.   (A tool exists in git repository to modify the embedded info)
+
+4.  Obtain from Developer.  Irfan can provide a ready firmware image, but it may not be customized provisioned as per #3.
+
+
+Modifying Firmware:
+===================
+
+As mentioned firmware has to be modified, so that the embedded AWS-IOT certificates and THing Name matches the Rune Provisioning Database.
+
+In early days development, it may not be such a big issue. But anytime a configuration parameter changes, it will end up modifying operation of multiple devices.
+
+A tool exists in git repository to modify the embedded info.
+
+
+
+Flashing Firmware:
+==================
+
+Firmware can be flashed as follows:
+
+1.  Device's WAN port must be activiated.  i.e. connected to a DHCP server via WAN port, which will provide it a temporary address lease.
+2.  Device's LAN port must be connected to a local PC/laptop directly or via a Switch.
+3.  Web Management access is only provided on the LAN port network.
+4.  Configure the local PC/laptop to an address in 192.168.8.x  network.
+5.  Ping and verify connectivity to 192.168.8.1
+6.  Open Web browser on PC/laptop and navigate to 192.168.8.1 address.
+7.  Further navigate to System->Utilities->Firmware Upgrade  and follow instructions to upload the firmware and then click OK to upgrade.
+8.  After upgrade the Router will reboot into new firmware.
+9.  During flashing / upgrade process, the Router should not suffer any disconnections or Power interruptions.
+
+
+
+
+Updated 05/09/2016:  Alternate flashing method:
+
+Another shortcut exists, in case the local PC/laptop has a telnet client available.
+
+With the same prior topology, 'telnet' to 192.168.8.1.
+You will be connected to the Router in 'Root' priviliged mode.
+At Router prompt (which is totally Linux shell),  'scp' over the  firmware file from the PC/laptop.
+scp  user@192.168.1.x:/firmware-path/firmware-file /tmp
+Verify md5 of the transferred file, with the md5 on the PC/laptop.  ** very important **
+Initiate firmwar Flash by issuing:
+' mtd -r write /tmp/firmware-file firware'
+This will start firmware direct copy on to flash sub-partition.
+At the end of flashing (may take 1-3 minutes), the Router will self-reboot to new firmware image.
+
+
